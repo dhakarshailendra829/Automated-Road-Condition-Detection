@@ -1,4 +1,3 @@
-/* ROADSAFE AI - Complete Dynamic Color System */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 * {
@@ -6,42 +5,35 @@
     box-sizing: border-box;
 }
 
-/* === ROOT VARIABLES - ROAD SAFETY PALETTE === */
 :root {
-    /* Primary Brand Colors */
-    --roadsafe-primary: #38bdf8;      /* AI Blue */
-    --roadsafe-success: #10b981;      /* Safe Green */
-    --roadsafe-warning: #f59e0b;      /* Monitor Orange */
-    --roadsafe-danger: #ef4444;       /* Critical Red */
+    --roadsafe-primary: #38bdf8;      
+    --roadsafe-success: #10b981;      
+    --roadsafe-warning: #f59e0b;      
+    --roadsafe-danger: #ef4444;       
     
-    /* Dynamic Risk States */
     --risk-low: #10b981;
     --risk-medium: #f59e0b;
     --risk-high: #ef4444;
     
-    /* Backgrounds */
-    --bg-primary: #0f172a;
+    --bg-primary: #182031;
     --bg-secondary: #1e293b;
-    --bg-card: rgba(30, 41, 59, 0.8);
+    --bg-card: rgba(4, 53, 133, 0.8);
     --bg-glass: rgba(255, 255, 255, 0.05);
     
-    /* Text */
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
+    --text-primary: #020910;
+    --text-secondary: #021328;
+    --text-muted: #1b1c1e;
     
-    /* Gradients */
-    --gradient-safe: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    --gradient-medium: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    --gradient-high: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    --gradient-primary: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+    --gradient-safe: linear-gradient(135deg, #10b981 0%, #ba0d83 100%);
+    --gradient-medium: linear-gradient(135deg, #36ef08 0%, #dc7807 100%);
+    --gradient-high: linear-gradient(135deg, #29057f 0%, #780404 100%);
+    --gradient-primary: linear-gradient(135deg, #0a904d 0%, #0ea5e9 100%);
 }
 
-/* === DYNAMIC TAB COLORS - Auto Change on Analysis === */
 .main-header.risk-low {
     background: var(--gradient-safe) !important;
-    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
-    border-left: 6px solid #059669;
+    box-shadow: 0 20px 40px rgba(16, 135, 95, 0.3);
+    border-left: 6px solid #08f2a8;
 }
 
 .main-header.risk-medium {
@@ -53,18 +45,17 @@
 .main-header.risk-high {
     background: var(--gradient-high) !important;
     animation: highRiskPulse 2s infinite;
-    box-shadow: 0 20px 60px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 20px 60px rgba(208, 7, 7, 0.5);
     border-left: 6px solid #dc2626;
 }
 
-/* === BASE LAYOUT === */
 .stApp {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #2e3b4f 100%);
     color: var(--text-primary);
 }
 
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    background: linear-gradient(180deg, #0f172a 0%, #2a3f61 100%);
     border-right: 1px solid #334155;
 }
 
@@ -72,7 +63,6 @@
     padding: 1rem;
 }
 
-/* === CARDS & CHARTS === */
 .chart-card, .status-card {
     background: var(--bg-card) !important;
     backdrop-filter: blur(20px);
@@ -90,7 +80,6 @@
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* === HEADERS === */
 .header-title {
     font-size: 2.5rem !important;
     font-weight: 800 !important;
@@ -106,7 +95,6 @@
     font-weight: 500;
 }
 
-/* === BUTTONS - ROADSAFE Style === */
 .stButton > button {
     background: linear-gradient(135deg, var(--roadsafe-primary), #0ea5e9) !important;
     color: white !important;
@@ -130,7 +118,6 @@
     box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4) !important;
 }
 
-/* === METRICS & KPIs === */
 .metric-container {
     background: var(--bg-glass) !important;
     border-radius: 16px !important;
@@ -143,13 +130,11 @@
     font-weight: 600 !important;
 }
 
-/* === PROGRESS BARS === */
 .stProgress > div > div > div > div {
     background: linear-gradient(90deg, var(--roadsafe-primary), var(--roadsafe-success)) !important;
     border-radius: 10px !important;
 }
 
-/* === TABLES === */
 .stDataFrame {
     background: var(--bg-card) !important;
     border-radius: 16px !important;
@@ -160,9 +145,8 @@
     background: rgba(56, 189, 248, 0.1) !important;
 }
 
-/* === ANIMATIONS === */
 @keyframes highRiskPulse {
-    0%, 100% { box-shadow: 0 20px 60px rgba(239, 68, 68, 0.5); }
+    0%, 100% { box-shadow: 0 20px 60px rgba(201, 24, 24, 0.5); }
     50% { box-shadow: 0 20px 80px rgba(239, 68, 68, 0.8); }
 }
 
@@ -179,7 +163,6 @@
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* === REALTIME SPECIFIC === */
 .realtime-kpi {
     animation: realtimePulse 2s infinite;
 }
@@ -189,7 +172,6 @@
     70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
 }
 
-/* === EXPANDERS === */
 .stExpander {
     background: var(--bg-glass) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -201,14 +183,12 @@
     border-radius: 12px !important;
 }
 
-/* === SUCCESS/ERROR MESSAGES === */
 .stSuccess, .stError, .stInfo, .stWarning {
     border-radius: 12px !important;
     border-left: 4px solid var(--roadsafe-primary) !important;
     padding: 16px !important;
 }
 
-/* === MOBILE RESPONSIVE === */
 @media (max-width: 768px) {
     .header-title { font-size: 2rem !important; }
     .chart-card, .status-card { padding: 16px !important; margin: 8px 0 !important; }

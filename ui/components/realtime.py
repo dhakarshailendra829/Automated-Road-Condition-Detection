@@ -3,17 +3,17 @@ import numpy as np
 import time
 import pandas as pd
 from datetime import datetime, timedelta
-from datetime import datetime  # REQUIRED at top of realtime.py
+from datetime import datetime  
 import streamlit as st
 import numpy as np
 import time
 import pandas as pd
 
 def live_kpi_metrics(refresh_rate=2):
-    """✅ 100% ERROR-FREE Live Metrics - Fixed CSS Syntax"""
+    """100% ERROR-FREE Live Metrics - Fixed CSS Syntax"""
     st.markdown("""
     <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #38bdf8; margin: 0;">🔴 LIVE ROAD INFRASTRUCTURE MONITORING</h2>
+        <h2 style="color: #38bdf8; margin: 0;"> LIVE ROAD INFRASTRUCTURE MONITORING</h2>
         <div style="font-size: 14px; color: #94a3b8; margin-top: 5px;">
             Real-time system health & road network status
         </div>
@@ -28,7 +28,6 @@ def live_kpi_metrics(refresh_rate=2):
              "Active Issues", "Risk Score"]
     colors = ["#10b981", "#38bdf8", "#f59e0b", "#059669", "#ef4444", "#dc2626"]
 
-    # Inject CSS ONCE outside loop (FIXES parsing error)
     st.markdown("""
     <style>
     @keyframes pulse {{
@@ -42,7 +41,6 @@ def live_kpi_metrics(refresh_rate=2):
     for iteration in range(30):
         current_time = datetime.now().strftime("%H:%M:%S")
         
-        # FIXED: Numeric → String (no multiplication errors)
         numeric_metrics = []
         for i, base in enumerate([99.8, 94.2, 1.8, 87.5, 23, 42.3]):
             if i == 0: numeric_metrics.append(99.8 + np.random.uniform(-0.1, 0.1))
@@ -57,7 +55,6 @@ def live_kpi_metrics(refresh_rate=2):
                 risk = min(85, issues * 1.8)
                 numeric_metrics.append(risk + np.random.uniform(-2, 2))
         
-        # Format strings safely
         metrics = [
             f"{numeric_metrics[0]:.1f}%",
             f"{numeric_metrics[1]:.1f}%", 
@@ -67,7 +64,6 @@ def live_kpi_metrics(refresh_rate=2):
             f"{numeric_metrics[5]:.0f}"
         ]
 
-        # FIXED: CSS without curly brace conflicts
         for ph, label, value, color in zip(placeholders, names, metrics, colors):
             ph.markdown(f"""
             <div style="
@@ -100,7 +96,6 @@ def live_kpi_metrics(refresh_rate=2):
             </div>
             """, unsafe_allow_html=True)
 
-        # Summary metrics (stable - outside rapid updates)
         st.markdown("---")
         col_a, col_b, col_c = st.columns(3)
         with col_a: st.metric("Total Roads", "1,247", "+12")
@@ -109,17 +104,16 @@ def live_kpi_metrics(refresh_rate=2):
 
         time.sleep(refresh_rate)
 
-    st.success("📊 Live monitoring complete. System: OPTIMAL ✅")
+    st.success("Live monitoring complete. System: OPTIMAL ")
 
 def live_crew_status():
     """Real-time crew availability dashboard"""
-    st.markdown("<h3 style='color: #10b981;'>👥 Live Crew Status</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #10b981;'>Live Crew Status</h3>", unsafe_allow_html=True)
     
-    # Simulated crew data matching crew_data_with_email.csv format
     crew_status = pd.DataFrame({
         'Crew ID': ['C001', 'C002', 'C003', 'C004', 'C005'],
         'Name': ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson', 'Tom Brown'],
-        'Status': ['Available ✅', 'Dispatched 🚛', 'Available ✅', 'On Break ⏸️', 'Available ✅'],
+        'Status': ['Available', 'Dispatched', 'Available', 'On Break', 'Available'],
         'Location': ['Sector A', 'Road-47', 'Sector B', 'Base', 'Sector C'],
         'ETA': ['Ready', '12 min', 'Ready', '15 min', 'Ready']
     })

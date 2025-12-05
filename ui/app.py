@@ -13,7 +13,6 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-# FIXED: ReportLab imports
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
@@ -35,7 +34,6 @@ def load_local_css(path: Path):
 
 load_local_css(CSS_PATH)
 
-# FIXED: Components import
 COMPONENTS_DIR = BASE_DIR / "components"
 if COMPONENTS_DIR.exists() and str(COMPONENTS_DIR) not in sys.path:
     sys.path.insert(0, str(COMPONENTS_DIR))
@@ -53,7 +51,6 @@ try:
 except ImportError:
     LIVE_COMPONENTS_AVAILABLE = False
 
-# FIXED: Load models and crew data FIRST
 @st.cache_resource
 def load_models():
     try:
@@ -69,61 +66,48 @@ def load_models():
 
 @st.cache_data
 def load_crew_data():
-    try:
-        df = pd.read_csv("crew_data_with_email.csv")
-        
-        # FIXED: Safe column handling for your CSV format
-        if 'helpline_email' in df.columns:
-            df['email'] = df['helpline_email'].astype(str)
-        else:
-            df['email'] = 'no-email@crewdata.com'
-            
-        df['name'] = df.get('name', df.get('crew_id', 'Unknown')).astype(str)
-        
-        # FIXED: Safe status handling - NO astype error
-        if 'status' in df.columns and df['status'].dtype != 'object':
-            df['status'] = df['status'].astype(str).str.lower()
-        else:
-            df['status'] = 'available'
-            
-        return df
-    except Exception as e:
-        st.warning(f"Crew CSV error (using fallback): {e}")
-        return pd.DataFrame({
-            'name': ['John Doe', 'Jane Smith'], 
-            'email': ['john@crewdata.com', 'jane@crewdata.com'],
-            'status': ['available', 'available']
-        })
+    crew_data = pd.DataFrame({
+        'name': ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Sneha Gupta', 'Vikram Singh'],
+        'email': ['rahul@crewteam.com', 'priya@crewteam.com', 'amit@crewteam.com', 
+                  'sneha@crewteam.com', 'vikram@crewteam.com'],
+        'level': ['senior', 'junior', 'senior', 'junior', 'senior'],
+        'status': ['available', 'available', 'busy', 'available', 'available']
+    })
+    
+    crew_data['name'] = crew_data['name'].astype(str)
+    crew_data['email'] = crew_data['email'].astype(str)
+    crew_data['status'] = crew_data['status'].astype(str).str.lower()
+    
+    return crew_data
 
-# FIXED: Global variables defined BEFORE use
 ML_MODEL, PCA, SCALER, FEATURE_EXTRACTOR = load_models()
 CREW_DF = load_crew_data()
 
 if LIVE_COMPONENTS_AVAILABLE:
-    st.sidebar.success("🚀 Live Components: ACTIVE")
+    st.sidebar.success(" Live Components: ACTIVE")
 else:
-    st.sidebar.info("📦 Live Components: OFFLINE")
+    st.sidebar.info(" Live Components: OFFLINE")
 
 def dispatch_crew(analysis_results):
     if CREW_DF.empty or not analysis_results.get("detections"):
-        return "⚠️ No issues detected or crew data unavailable"
+        return " "
     
     required_cols = ['status', 'name', 'email']
     missing_cols = [col for col in required_cols if col not in CREW_DF.columns]
     if missing_cols:
-        return f"❌ Crew data missing columns: {missing_cols}"
+        return f" Crew data missing columns: {missing_cols}"
     
     try:
         available_crew = CREW_DF[CREW_DF['status'].str.contains('available', case=False, na=False)].head(3)
         if available_crew.empty:
-            return "⚠️ No available crew found"
+            return " No available crew found"
         
         dispatched = []
         for _, crew in available_crew.iterrows():
             dispatched.append(f"{crew['name']} ({crew['email']})")
-        return f"✅ Dispatched: {', '.join(dispatched)}"
+        return f" Dispatched: {', '.join(dispatched)}"
     except Exception as e:
-        return f"❌ Dispatch error: {str(e)}"
+        return f" Dispatch error: {str(e)}"
 
 def generate_pdf_report(analysis):
     buffer = BytesIO()
@@ -177,7 +161,7 @@ def draw_damage_annotations(img: Image.Image, detections: List):
     img_copy.save(buf, format="PNG")
     return buf.getvalue()
 
-def create_kpi_html(title: str, value: str, color: str = "#3b82f6"):
+def create_kpi_html(title: str, value: str, color: str = "#094ab3"):
     return f"""
     <div class="status-card">
         <div class="card-value" style="color:{color};">{value}</div>
@@ -189,9 +173,9 @@ def create_risk_gauge(value: float):
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta", value=value, 
         gauge={'axis': {'range': [None, 100]}, 
-               'steps': [{'range': [0, 30], 'color': "#10b981"},
+               'steps': [{'range': [0, 30], 'color': "#076c4b"},
                         {'range': [30, 70], 'color': "#f59e0b"},
-                        {'range': [70, 100], 'color': "#ef4444"}],
+                        {'range': [70, 100], 'color': "#af0808"}],
                'threshold': {'line': {'color': "red", 'width': 4}, 'value': value}}))
     fig.update_layout(height=320, margin=dict(t=20, b=10, l=10, r=10))
     return fig
@@ -240,7 +224,7 @@ def left_sidebar_navigation():
     st.sidebar.title("🚦 ROADSAFE AI")
     st.sidebar.markdown("**Monitoring & Analysis**")
     page = st.sidebar.selectbox("Navigation", ["Real-time Analysis", "Live Monitor", "Network Analytics", "Settings"])
-    uploaded_file = st.sidebar.file_uploader("📸 Upload Road Image", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.sidebar.file_uploader(" Upload Road Image", type=["jpg", "jpeg", "png"])
     st.sidebar.metric("Crew Available", len(CREW_DF[CREW_DF['status'].str.contains('available', case=False, na=False)]))
     return page, uploaded_file
 
@@ -249,11 +233,11 @@ def main_analysis_page(uploaded_file):
     col_left, col_right = st.columns([1.2, 1])
     
     with col_left:
-        st.markdown('<div class="chart-card"><h3>🔍 Image Scanner</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h3> Image Scanner</h3></div>', unsafe_allow_html=True)
         if uploaded_file:
             img = Image.open(uploaded_file).convert("RGB")
-            st.image(img, use_column_width=True)
-            if st.button("🚀 Run Analysis", type="primary"):
+            st.image(img, use_container_width=True)
+            if st.button(" Run Analysis", type="primary"):
                 with st.spinner("Running AI analysis..."):
                     analysis = run_ai_analysis(img)
                     if analysis.get("status") == "success":
@@ -265,9 +249,9 @@ def main_analysis_page(uploaded_file):
                             "confidence": round(analysis["confidence"], 2),
                             "issues": [d["label"] for d in analysis["detections"]]
                         })
-                        st.success("✅ Analysis complete!")
+                        st.success(" Analysis complete!")
                     else:
-                        st.error(f"❌ Analysis failed: {analysis.get('detail','unknown')}")
+                        st.error(f" Analysis failed: {analysis.get('detail','unknown')}")
         else:
             st.markdown('<div class="chart-card" style="padding:40px;color:#94a3b8;text-align:center"><h3>📤 Upload road image to start</h3></div>', unsafe_allow_html=True)
 
@@ -281,23 +265,23 @@ def main_analysis_page(uploaded_file):
             cols[2].markdown(create_kpi_html("Issues", str(len(a["detections"]))), unsafe_allow_html=True)
             
             annotated = draw_damage_annotations(st.session_state["last_image"], a["detections"])
-            st.markdown("<h4>📷 Annotated Image</h4>", unsafe_allow_html=True)
-            st.image(annotated, use_column_width=True)
+            st.markdown("<h4> Annotated Image</h4>", unsafe_allow_html=True)
+            st.image(annotated, use_container_width=True)
             
             rec = recommendation_from_detections(a["detections"])
             st.markdown(f"""
             <div style='padding:16px;border-radius:12px;background:linear-gradient(90deg, #10b981, #059669);color:white;text-align:center'>
-                <strong>🎯 Recommendation:</strong> {rec['action']} <br><small>Level: {rec['level']}</small>
+                <strong> Recommendation:</strong> {rec['action']} <br><small>Level: {rec['level']}</small>
             </div>
             """, unsafe_allow_html=True)
             
-            with st.expander("📈 Model Metrics"):
+            with st.expander(" Model Metrics"):
                 dfm = pd.DataFrame([a.get("model_metrics", {})]).T
                 st.dataframe(dfm, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
     with col_right:
-        st.markdown('<div class="chart-card"><h3>📊 Risk Analytics</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h3> Risk Analytics</h3></div>', unsafe_allow_html=True)
         if st.session_state.get("last_analysis"):
             la = st.session_state["last_analysis"]
             fig = create_risk_gauge(la["confidence"])
@@ -314,7 +298,7 @@ def main_analysis_page(uploaded_file):
             st.plotly_chart(fig_pie, use_container_width=True)
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("🚨 Dispatch Crew", type="primary", use_container_width=True):
+                if st.button(" Dispatch Crew", type="primary", use_container_width=True):
                     result = dispatch_crew(la)
                     st.success(result)
                     if LIVE_COMPONENTS_AVAILABLE:
@@ -324,14 +308,14 @@ def main_analysis_page(uploaded_file):
                             st.balloons()
             
             with col2:
-                if st.button("📄 Generate Report", use_container_width=True):
+                if st.button("Generate Report", use_container_width=True):
                     report_data = generate_pdf_report(la)
-                    st.download_button("⬇️ Download PDF", report_data, 
+                    st.download_button("Download PDF", report_data, 
                                      "roadsafe_report.pdf", "application/pdf")
         else:
             st.markdown('<div style="padding:30px;color:#94a3b8;text-align:center">Run analysis first</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="chart-card"><h4>📜 Detection History</h4></div>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h4> Detection History</h4></div>', unsafe_allow_html=True)
         hist = st.session_state.get("detection_history", [])
         if hist:
             for h in hist[:5]:
@@ -348,17 +332,15 @@ def live_monitor_page():
     render_header()
     st.markdown('<div class="chart-card"><h3 style="margin:0 0 12px 0">Live Monitor</h3></div>', unsafe_allow_html=True)
     
-    # FIXED: Add STOP button + limited iterations
-    if st.button("🔴 START Live Monitor", type="primary"):
+    if st.button(" START Live Monitor", type="primary"):
         st.session_state.live_monitor_active = True
-    elif st.button("⏹️ STOP Live Monitor"):
+    elif st.button(" STOP Live Monitor"):
         st.session_state.live_monitor_active = False
     
     if st.session_state.get('live_monitor_active', False) and LIVE_COMPONENTS_AVAILABLE:
         try:
             realtime_module.live_kpi_metrics(refresh_rate=1.5)
         except:
-            # FALLBACK: Manual metrics (NO infinite loop)
             col1, col2, col3, col4, col5, col6 = st.columns(6)
             col1.metric("Total Roads", "1,247", "+12")
             col2.metric("Crew Dispatched", "17", "+3")
@@ -367,11 +349,11 @@ def live_monitor_page():
             col5.metric("Accuracy", "94.2%", "+0.2%")
             col6.metric("Risk Score", "42", "-1")
     else:
-        st.info("👆 Click START to begin live monitoring")
+        st.info(" Click START to begin live monitoring")
 
 def network_analytics_page():
     render_header()
-    st.markdown('<div class="chart-card"><h2>🌐 Network Analytics</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-card"><h2> Network Analytics</h2></div>', unsafe_allow_html=True)
     df = pd.DataFrame({
         "date": pd.date_range(end=pd.Timestamp.now(), periods=10).astype(str),
         "issues": np.random.randint(15, 35, 10),
@@ -382,23 +364,22 @@ def network_analytics_page():
 
 def settings_page():
     render_header()
-    st.markdown('<div class="chart-card"><h2>⚙️ System Settings</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-card"><h2> System Settings</h2></div>', unsafe_allow_html=True)
     st.checkbox("Debug: Show Crew Data", key="debug_crew")
     
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("🤖 ML Model", "✅ Loaded" if ML_MODEL else "❌ Failed")
-        st.metric("🧠 Feature Extractor", "✅ Loaded" if FEATURE_EXTRACTOR else "❌ Failed")
+        st.metric(" ML Model", " Loaded" if ML_MODEL else " Failed")
+        st.metric(" Feature Extractor", " Loaded" if FEATURE_EXTRACTOR else " Failed")
     with col2:
-        st.metric("👥 Crew Records", len(CREW_DF))
+        st.metric(" Crew Records", len(CREW_DF))
         available_crew = len(CREW_DF[CREW_DF['status'].str.contains('available', case=False, na=False)])
-        st.metric("✅ Available Crew", available_crew)
+        st.metric(" Available Crew", available_crew)
     
     if st.session_state.get('debug_crew') and not CREW_DF.empty:
         st.subheader("Crew Data Preview")
         st.dataframe(CREW_DF[['name', 'email', 'status']].head(10))
 
-# MAIN EXECUTION - FIXED
 page, uploaded = left_sidebar_navigation()
 
 if page == "Real-time Analysis":

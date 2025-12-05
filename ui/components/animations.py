@@ -5,7 +5,6 @@ import numpy as np
 
 def animated_gauge(title, target_value=85, duration=2.5):
     """Enhanced animated gauge with ROADSAFE AI colors and smooth transitions"""
-    # Base figure with ROADSAFE theme
     fig = go.Figure(
         go.Indicator(
             mode="gauge+number+delta",
@@ -19,9 +18,9 @@ def animated_gauge(title, target_value=85, duration=2.5):
                 'borderwidth': 2,
                 'bordercolor': "#1e293b",
                 'steps': [
-                    {'range': [0, 30], 'color': '#10b981'},  # Safe - Green
-                    {'range': [30, 70], 'color': '#f59e0b'},  # Medium - Orange
-                    {'range': [70, 100], 'color': '#ef4444'}  # High Risk - Red
+                    {'range': [0, 30], 'color': '#10b981'},  
+                    {'range': [30, 70], 'color': '#f59e0b'},  
+                    {'range': [70, 100], 'color': '#ef4444'}  
                 ],
                 'threshold': {
                     'line': {'color': "#ef4444", 'width': 4},
@@ -34,27 +33,24 @@ def animated_gauge(title, target_value=85, duration=2.5):
     
     placeholder = st.empty()
     
-    # Smooth animation loop
     for i in range(101):
         value = target_value * (i / 100)
         fig.update_traces(value=value)
         placeholder.plotly_chart(fig, use_container_width=True)
         time.sleep(duration / 100)
     
-    # Final static display
     st.plotly_chart(fig, use_container_width=True)
 
 def crew_dispatch_animation(crew_count=3):
     """Animated crew dispatch with truck movement and success indicators"""
-    st.success("🚨 CREW DISPATCHED SUCCESSFULLY!")
+    st.success("CREW DISPATCHED SUCCESSFULLY!")
     
-    # Animated truck dispatch
     progress_bar = st.progress(0)
     status_text = st.empty()
     
     trucks = ["🚛", "🚚", "🚜"]
     for i in range(crew_count):
-        status_text.markdown(f"📤 Dispatching {trucks[i]} - Crew #{i+1}")
+        status_text.markdown(f"Dispatching {trucks[i]} - Crew #{i+1}")
         for j in range(101):
             progress_bar.progress(j)
             time.sleep(0.02)
@@ -73,7 +69,7 @@ def risk_alert_animation(severity="HIGH", confidence=92):
                 background: linear-gradient(45deg, {color}, rgba(255,255,255,0.1)); 
                 animation: pulse 1.5s infinite;">
         <div style="font-size: 36px; font-weight: 800; color: {color}; margin-bottom: 10px;">
-            🚨 {severity} RISK DETECTED
+             {severity} RISK DETECTED
         </div>
         <div style="font-size: 24px; color: rgba(255,255,255,0.9);">
             Confidence: <strong>{confidence}%</strong>
@@ -94,11 +90,11 @@ def loading_scanner(duration=3.0):
     status_text = st.empty()
     
     phases = [
-        "🔍 Initializing Deep Learning Pipeline...",
-        "🧠 Loading ResNet50 Feature Extractor...",
-        "⚙️ Applying PCA Dimensionality Reduction...",
-        "🎯 Running ML Classification...",
-        "✅ Analysis Complete!"
+        "Initializing Deep Learning Pipeline...",
+        "Loading ResNet50 Feature Extractor...",
+        "Applying PCA Dimensionality Reduction...",
+        "Running ML Classification...",
+        "Analysis Complete!"
     ]
     
     for i, phase in enumerate(phases):
@@ -108,7 +104,7 @@ def loading_scanner(duration=3.0):
             progress_bar.progress(progress)
             time.sleep(duration / (len(phases) * 100))
     
-    st.success("🚀 Road Infrastructure Analysis Ready!")
+    st.success("Road Infrastructure Analysis Ready!")
 
 def metrics_reveal(metrics):
     """
@@ -118,10 +114,8 @@ def metrics_reveal(metrics):
     cols = st.columns(len(metrics))
     for i, (key, value) in enumerate(metrics.items()):
         with cols[i]:
-            # Color coding
             color = "#10b981" if value < 30 else "#f59e0b" if value < 70 else "#ef4444"
             
-            # Animated reveal
             placeholder = st.empty()
             for j in range(101):
                 reveal_val = value * (j / 100)
