@@ -190,7 +190,6 @@ def recommendation_from_detections(detections):
         return {"level": "Medium", "action": "Plan maintenance and monitor"}
     return {"level": "Low", "action": "Monitor periodically"}
 
-# Session state
 if "detection_history" not in st.session_state:
     st.session_state["detection_history"] = []
 if "last_analysis" not in st.session_state:
@@ -224,20 +223,42 @@ def left_sidebar_navigation():
     st.sidebar.title("🚦 ROADSAFE AI")
     st.sidebar.markdown("**Monitoring & Analysis**")
     page = st.sidebar.selectbox("Navigation", ["Real-time Analysis", "Live Monitor", "Network Analytics", "Settings"])
-    uploaded_file = st.sidebar.file_uploader(" Upload Road Image", type=["jpg", "jpeg", "png"])
+    
+    # Only file upload now
+    uploaded_file = st.sidebar.file_uploader("Upload Road Image", type=["jpg", "jpeg", "png"])
+    
     st.sidebar.metric("Crew Available", len(CREW_DF[CREW_DF['status'].str.contains('available', case=False, na=False)]))
-    return page, uploaded_file
+    return page, uploaded_file  
 
 def main_analysis_page(uploaded_file):
     render_header()
     col_left, col_right = st.columns([1.2, 1])
     
-    with col_left:
-        st.markdown('<div class="chart-card"><h3> Image Scanner</h3></div>', unsafe_allow_html=True)
+    tab1, tab2 = st.tabs(["File Upload", "Live Camera"])
+    
+    img = None
+    img_source = None
+    
+    with tab1:
         if uploaded_file:
             img = Image.open(uploaded_file).convert("RGB")
-            st.image(img, use_container_width=True)
-            if st.button(" Run Analysis", type="primary"):
+            img_source = "File Upload"
+            st.image(img, use_container_width=True, caption="Uploaded Image")
+    
+    with tab2:
+        camera_img = st.camera_input("Take road photo", key="road_camera")
+        if camera_img:
+            img = Image.open(camera_img).convert("RGB")
+            img_source = "Live Camera"
+            st.image(img, use_container_width=True, caption="Live Capture")
+    
+    with col_left:
+        st.markdown('<div class="chart-card"><h3> Image Scanner</h3></div>', unsafe_allow_html=True)
+        
+        if img:
+            st.success(f"{img_source}")
+            
+            if st.button("Run Analysis", type="primary", use_container_width=True):
                 with st.spinner("Running AI analysis..."):
                     analysis = run_ai_analysis(img)
                     if analysis.get("status") == "success":
@@ -247,13 +268,14 @@ def main_analysis_page(uploaded_file):
                             "time": time.strftime("%Y-%m-%d %H:%M:%S"),
                             "prediction": analysis["prediction"],
                             "confidence": round(analysis["confidence"], 2),
-                            "issues": [d["label"] for d in analysis["detections"]]
+                            "issues": [d["label"] for d in analysis["detections"]],
+                            "source": img_source
                         })
-                        st.success(" Analysis complete!")
+                        st.success(f"Analysis complete from {img_source}!")
                     else:
-                        st.error(f" Analysis failed: {analysis.get('detail','unknown')}")
+                        st.error(f"Analysis failed: {analysis.get('detail','unknown')}")
         else:
-            st.markdown('<div class="chart-card" style="padding:40px;color:#94a3b8;text-align:center"><h3>📤 Upload road image to start</h3></div>', unsafe_allow_html=True)
+            st.markdown('<div class="chart-card" style="padding:40px;color:#94a3b8;text-align:center"><h3>Select tab above to load image</h3></div>', unsafe_allow_html=True)
 
         if st.session_state.get("last_analysis"):
             a = st.session_state["last_analysis"]
@@ -380,7 +402,7 @@ def settings_page():
         st.subheader("Crew Data Preview")
         st.dataframe(CREW_DF[['name', 'email', 'status']].head(10))
 
-page, uploaded = left_sidebar_navigation()
+page, uploaded = left_sidebar_navigation() 
 
 if page == "Real-time Analysis":
     main_analysis_page(uploaded)

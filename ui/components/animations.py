@@ -56,7 +56,7 @@ def crew_dispatch_animation(crew_count=3):
             time.sleep(0.02)
         st.balloons()
     
-    status_text.markdown("✅ All crews dispatched and en route!")
+    status_text.markdown(" All crews dispatched and en route!")
     st.rerun()
 
 def risk_alert_animation(severity="HIGH", confidence=92):
